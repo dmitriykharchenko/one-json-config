@@ -2,7 +2,7 @@
 
 Allows to have one config.json for all your envs.
 
-It takes config json:
+Give it config json like that:
 
 ```
 {
@@ -12,7 +12,7 @@ It takes config json:
 }
 ```
 
-And for production you'll get:
+In production you'll see:
 
 ```
 {
@@ -21,11 +21,29 @@ And for production you'll get:
 }
 ```
 
-development:
+And in development:
 
 ```
 {
   "key": "value",
   "otherKey": "otherDev"
 }
+```
+
+
+### API
+
+`oneJsonConfig(config, currentEnvName, allowedEnvs)`
+
+Example:
+
+```
+import oneJsonConfig from 'one-json-config'
+import config from '../some/path/to/config/json'
+
+const env = process.env.NODE_ENV
+
+export default oneJsonConfig(config, env, ['development', 'production'])
+
+
 ```
