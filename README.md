@@ -47,3 +47,22 @@ export default oneJsonConfig(config, env, ['development', 'production'])
 
 
 ```
+
+`allowedEnvs` can be also specified in `config.json` by key `__envs`:
+
+```
+import oneJsonConfig from 'one-json-config'
+
+config = {
+  "__envs": ["development", "production"],
+  "key": "value",
+  "otherKey.prod": "otherProd",
+  "otherKey.dev": "otherDev"
+}
+
+const env = process.env.NODE_ENV
+
+export default oneJsonConfig(config, env)
+
+
+```

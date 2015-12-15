@@ -1,5 +1,6 @@
 require('babel-register')
 var should = require('should')
+var R = require('ramda')
 var jsonCrawler = require('../index')
 
 const configJSON = {
@@ -34,5 +35,21 @@ describe('crawl json config', function() {
   it('should work with nested objects', function () {
     var envConfig = jsonCrawler(configJSON, 'staging', allowedEnvs)
     envConfig.nested.should.be.an.instanceOf(Object).and.have.have.property('value', 4)
+  })
+
+  it('should pick allowed envs from "__envs"', function () {
+    var config = R.merge({
+      '__envs': allowedEnvs
+    }, configJSON)
+    var envConfig = jsonCrawler(config, 'prod')
+    envConfig.should.have.property('some.key', 'production.value')
+    envConfig.should.have.property('someOtherKey', 'productionValue')
+    envConfig.should.not.have.property('hithere', '1234')
+  })
+
+  it('should throw error when provided invalid env', function () {
+    (function(){
+      return jsonCrawler(configJSON, 'someOtherEnv', allowedEnvs)
+    }).should.throw('env someOtherEnv is not allowed, please use one of: prod, dev, staging; or provide correct list of allowed envs')
   })
 })

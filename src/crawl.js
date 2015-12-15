@@ -1,6 +1,18 @@
 import R from 'ramda'
 
+const serviceFields = ['__envs']
+
+const filterFields = R.filter(function(field){
+  return serviceFields.indexOf(field) < 0
+})
+
 export function crawl(config, envPostfix, allowedEnvs) {
+  allowedEnvs = allowedEnvs || config.__envs
+
+  if(allowedEnvs.indexOf(envPostfix) < 0){
+    throw new Error(`env ${ envPostfix } is not allowed, please use one of: ${ allowedEnvs.join(', ') }; or provide correct list of allowed envs`)
+  }
+
   if (R.is(Object, config) && !R.is(Array, config)) {
     return R.reduce(function(newConfig, fieldName){
       var fieldEnv = R.last(fieldName.split('.'))
@@ -15,7 +27,7 @@ export function crawl(config, envPostfix, allowedEnvs) {
       }
 
       return newConfig
-    }, {}, R.keys(config))
+    }, {}, filterFields(R.keys(config)))
   } else {
     return R.clone(config)
   }
