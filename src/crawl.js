@@ -13,7 +13,13 @@ export function crawl(config, envPostfix, allowedEnvs) {
     throw new Error(`env ${ envPostfix } is not allowed, please use one of: ${ allowedEnvs.join(', ') }; or provide correct list of allowed envs`)
   }
 
-  if (R.is(Object, config) && !R.is(Array, config)) {
+  if(R.is(Function, config)){
+    return config
+  } else if(R.is(Array, config)){
+    return R.map(function(subConfig){
+      return crawl(subConfig, envPostfix, allowedEnvs)
+    }, config)
+  } else if (R.is(Object, config)) {
     return R.reduce(function(newConfig, fieldName){
       var fieldEnv = R.last(fieldName.split('.'))
 
@@ -29,6 +35,6 @@ export function crawl(config, envPostfix, allowedEnvs) {
       return newConfig
     }, {}, filterFields(R.keys(config)))
   } else {
-    return R.clone(config)
+    return config
   }
 }

@@ -14,7 +14,10 @@ const configJSON = {
     'value.staging': 4
   },
   'hithere.staging': '1234',
-  'not.a.env.key': 'value'
+  'not.a.env.key': 'value',
+  key: function(){ return 'hi' },
+  'func.prod': function(){ return 'hi production' },
+  'func.dev': function(){ return 'hi development' }
 }
 
 const allowedEnvs = ['prod', 'dev', 'staging']
@@ -51,5 +54,11 @@ describe('crawl json config', function() {
     (function(){
       return jsonCrawler(configJSON, 'someOtherEnv', allowedEnvs)
     }).should.throw('env someOtherEnv is not allowed, please use one of: prod, dev, staging; or provide correct list of allowed envs')
+  })
+
+  it('should play nice with functions', function(){
+    var envConfig = jsonCrawler(configJSON, 'prod', allowedEnvs)
+    envConfig.key.should.be.a.Function()
+    envConfig.func().should.be.eql('hi production')
   })
 })
