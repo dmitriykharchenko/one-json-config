@@ -9,7 +9,8 @@ const crawl = (config, envPostfix, allowedEnvs) => {
     throw new Error(`env ${ envPostfix } is not allowed, please use one of: ${ allowedEnvs.join(', ') }; or provide correct list of allowed envs`)
   }
 
-  if (typeof config === 'function') return config;
+  if (config instanceof RegExp) return config;
+  if (config instanceof Function) return config;
   if (config instanceof Array) return config.map((conf) => crawl(conf, envPostfix, allowedEnvs));
 
   if (typeof config !== 'object') return config;
