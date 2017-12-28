@@ -1,1 +1,1 @@
-module.exports = require('./lib/crawl').crawl
+module.exports = require('./src/crawl').crawl

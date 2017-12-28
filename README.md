@@ -1,6 +1,7 @@
 # one-json-config
 
 Allows to have one config.json for all your envs.
+Tested on node v9
 
 Give it config json like that:
 
@@ -12,7 +13,7 @@ Give it config json like that:
 }
 ```
 
-In production you'll see:
+for production it will be like:
 
 ```
 {
@@ -21,7 +22,7 @@ In production you'll see:
 }
 ```
 
-And in development:
+And for development:
 
 ```
 {
@@ -48,21 +49,19 @@ export default oneJsonConfig(config, env, ['development', 'production'])
 
 ```
 
-`allowedEnvs` can be also specified in `config.json` by key `__envs`:
+`allowedEnvs` can be also specified in `config.json` by key `__envs__`:
 
 ```
 import oneJsonConfig from 'one-json-config'
 
 config = {
-  "__envs": ["development", "production"],
+  "__envs__": ["development", "production"],
   "key": "value",
   "otherKey.prod": "otherProd",
   "otherKey.dev": "otherDev"
 }
 
-const env = process.env.NODE_ENV
-
-export default oneJsonConfig(config, env)
+export default oneJsonConfig(config, process.env.NODE_ENV);
 
 
 ```

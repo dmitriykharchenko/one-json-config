@@ -1,36 +1,40 @@
-import R from 'ramda'
+const serviceFields = ['__envs__'];
 
-const serviceFields = ['__envs']
+const filterKeys = (field) => serviceFields.indexOf(field) < 0;
 
-const filterFields = R.filter(function(field){
-  return serviceFields.indexOf(field) < 0
-})
+const crawl = (config, envPostfix, allowedEnvs) => {
+  allowedEnvs = allowedEnvs || config.__envs__
 
-export function crawl(config, envPostfix, allowedEnvs) {
-  allowedEnvs = allowedEnvs || config.__envs
-
-  if(allowedEnvs.indexOf(envPostfix) < 0){
+  if (allowedEnvs.indexOf(envPostfix) < 0) {
     throw new Error(`env ${ envPostfix } is not allowed, please use one of: ${ allowedEnvs.join(', ') }; or provide correct list of allowed envs`)
   }
 
-  if(R.is(Function, config) || R.is(Array, config)){
-    return config
-  } else if (R.is(Object, config)) {
-    return R.reduce(function(newConfig, fieldName){
-      var fieldEnv = R.last(fieldName.split('.'))
+  if (typeof config === 'function') return config;
+  if (config instanceof Array) return config.map((conf) => crawl(conf, envPostfix, allowedEnvs));
 
-      if(0 <= allowedEnvs.indexOf(fieldEnv)){
-        if(fieldEnv === envPostfix){
-          let newFieldName = fieldName.replace(`.${ fieldEnv }`, '')
-          newConfig[newFieldName] = crawl(config[fieldName], envPostfix, allowedEnvs)
-        }
-      } else {
-        newConfig[fieldName] = crawl(config[fieldName], envPostfix, allowedEnvs)
+  if (typeof config !== 'object') return config;
+
+  return Object.keys(config).filter(filterKeys).reduce((newConfig, fieldName) => {
+    const fieldEnv = fieldName.split('.').pop();
+
+    if (!fieldEnv || allowedEnvs.indexOf(fieldEnv) < 0) {
+      return {
+        ...newConfig,
+        [fieldName]: crawl(config[fieldName], envPostfix, allowedEnvs),
       }
+    }
 
-      return newConfig
-    }, {}, filterFields(R.keys(config)))
-  } else {
-    return config
-  }
+    if (fieldEnv === envPostfix) {
+      const newFieldName = fieldName.replace(`.${ fieldEnv }`, '');
+
+      return {
+        ...newConfig,
+        [newFieldName]: crawl(config[fieldName], envPostfix, allowedEnvs),
+      }
+    }
+
+    return newConfig
+  }, {});
 }
+
+exports.crawl = crawl
