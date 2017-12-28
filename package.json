@@ -22,5 +22,8 @@
   "homepage": "https://github.com/dmitriykharchenko/one-json-config#readme",
   "devDependencies": {
     "should": "^8.0.1"
+  },
+  "dependencies": {
+    "is-plain-object": "^2.0.4"
   }
 }

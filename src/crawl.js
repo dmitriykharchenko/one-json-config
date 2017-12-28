@@ -1,3 +1,4 @@
+const isPlainObject = require('is-plain-object');
 const serviceFields = ['__envs__'];
 
 const filterKeys = (field) => serviceFields.indexOf(field) < 0;
@@ -13,6 +14,7 @@ const crawl = (config, envPostfix, allowedEnvs) => {
   if (config instanceof Function) return config;
   if (config instanceof Array) return config.map((conf) => crawl(conf, envPostfix, allowedEnvs));
 
+  if (!isPlainObject(config)) return config;
   if (typeof config !== 'object') return config;
 
   return Object.keys(config).filter(filterKeys).reduce((newConfig, fieldName) => {
