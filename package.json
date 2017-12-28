@@ -1,6 +1,6 @@
 {
   "name": "one-json-config",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Way to write less configs for multiple envs",
   "main": "index.js",
   "scripts": {
